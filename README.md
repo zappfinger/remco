@@ -21,13 +21,12 @@ where x.x.x.x is the (fixed) IP address of the PI.
 Then, on the local machine start remco.py and enter some Linux commands (without the quotes)
 
 'ls' will ls on the PI and show the result on your local system.
-
 'cd' will change the directory on your PI.
 
-'lls' (local ls) will do ls on your local system.
-
-'lcd' (local cd) will do a local cd
+Local commands must be preceded by a '.', so:
+'.ls' will do ls on your local system.
+'.cd' will do a local cd
 
 'put filename'    will copy a file from your current local directory to the current remote directory,
 
-'get filename'    will do the reverse (from remote to local)PI remotely
+'get filename'    will do the reverse (from remote to local)

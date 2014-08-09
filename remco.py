@@ -1,9 +1,21 @@
 #
-#	remco.py	remote commands on a trusted network 
+#	remco.py	remote commands on a trusted network
+#   by zappfinger,
+#
+#	version:	1.2
+#	04AUG2014:	local commands now preceded by '.', e.g.: '.ls'
+#	09AUF2014:	using import readline to enable command history, back keys, etc
+#
+#   on the remote server, execute:
+#   export PYRO_FLAME_ENABLED=true
+#   and
+#   python -m Pyro4.utils.flameserver -H x.x.x.x -p 9999
+#	where x.x.x.x is IP address of the remote server
 #
 from __future__ import print_function
 import sys, os
 import Pyro4.utils.flame
+import readline
 
 if sys.version_info<(3,0):
     input=raw_input
@@ -12,7 +24,8 @@ Pyro4.config.SERIALIZER = "pickle"  # flame requires pickle serializer
 
 # connect!
 #	CHANGE THIS TO THE IP ADDRESS OF YOUR REMOTE SYSTEM
-flame = Pyro4.utils.flame.connect("192.168.2.2:9999")
+flame = Pyro4.utils.flame.connect("10.0.1.3:9999")
+#flame = Pyro4.utils.flame.connect("192.168.56.101:9999")
 
 # basic stuff
 socketmodule = flame.module("socket")
@@ -27,11 +40,10 @@ flame.sendmodule("flameexample.stuff", modulesource)
 prevcomm = 'pwd'
 
 while 1:
-	prompt = osmodule.getcwd() + '$ '
+	print('local dir: ' + os.popen('pwd').read().strip('\n'));
+	print('remote dir: ' + osmodule.getcwd())
+	prompt = "Enter command, precede local commands with a dot, e.g.: '.ls' $"
 	command = input(prompt)
-	if len(command) == 3:	# if UP arrow, then previous command!
-		if (ord(command[0])) == 27 and (ord(command[2])) == 65:
-			command = prevcomm
 	if 'get ' in command:
 		print(command + '\n')
 		file = command.replace('get ','')
@@ -50,12 +62,12 @@ while 1:
 		result = flame.module("flameexample.stuff").doCommand(command)
 		prevcomm = command
 		print(result)
-	elif 'lls' in command:		# local ls
-		print('local ls \n')	
-		print(os.popen('ls').read())
-	elif 'lcd ' in command:		#  local cd
+	elif '.cd ' in command:		#  local cd
 		dir = command.replace('lcd ','')
 		ret = os.chdir(os.path.abspath(dir))
+	elif command.startswith('.'):		# local commands
+		lcomm = command.strip('.')	
+		print(os.popen(lcomm).read())
 	else:
 		print(command + '\n')
 		result = flame.module("flameexample.stuff").doCommand(command)
