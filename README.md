@@ -4,7 +4,7 @@ remco
 <b>Remote command in Python using Pyro4, e.g. control your Raspberry PI remotely.</b>
 
 Very simple program to do remote commmands and send (put) or retrieve (get) files.
-Some local commands are also possible to navigate locally.
+Local commands are also possible to navigate locally.
 You could say it combines ssh and scp, except that this approach should be used on a closed network, since there is no security involved.
 
 For this to work Pyro4 has to be installed on the local and the remote system, say this is your PI.
