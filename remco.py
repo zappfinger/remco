@@ -2,9 +2,10 @@
 #	remco.py	remote commands on a trusted network
 #   by zappfinger,
 #
-#	version:	1.2
+#	version:	1.3
 #	04AUG2014:	local commands now preceded by '.', e.g.: '.ls'
 #	09AUF2014:	using import readline to enable command history, back keys, etc
+#	12AUG2014:	.cd was not working, get was not working
 #
 #   on the remote server, execute:
 #   export PYRO_FLAME_ENABLED=true
@@ -24,8 +25,8 @@ Pyro4.config.SERIALIZER = "pickle"  # flame requires pickle serializer
 
 # connect!
 #	CHANGE THIS TO THE IP ADDRESS OF YOUR REMOTE SYSTEM
-flame = Pyro4.utils.flame.connect("10.0.1.3:9999")
-#flame = Pyro4.utils.flame.connect("192.168.56.101:9999")
+#flame = Pyro4.utils.flame.connect("10.0.1.3:9999")
+flame = Pyro4.utils.flame.connect("192.168.56.101:9999")
 
 # basic stuff
 socketmodule = flame.module("socket")
@@ -46,8 +47,11 @@ while 1:
 	command = input(prompt)
 	if 'get ' in command:
 		print(command + '\n')
-		file = command.replace('get ','')
-		flame.getfile(file)
+		filen = command.replace('get ','')
+		gfile = flame.getfile(filen)
+		newfile = open(filen,'wb')
+		newfile.write(gfile)
+		newfile.close()
 		prevcomm = command
 	elif 'put ' in command:
 		print(command + '\n')
@@ -63,7 +67,7 @@ while 1:
 		prevcomm = command
 		print(result)
 	elif '.cd ' in command:		#  local cd
-		dir = command.replace('lcd ','')
+		dir = command.replace('.cd ','')
 		ret = os.chdir(os.path.abspath(dir))
 	elif command.startswith('.'):		# local commands
 		lcomm = command.strip('.')	
