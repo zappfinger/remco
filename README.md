@@ -27,6 +27,6 @@ Local commands must be preceded by a '.', so:
 '.ls' will do ls on your local system.
 '.cd' will do a local cd
 
-'put filename'    will copy a file from your current local directory to the current remote directory,
+'put filename'    will copy a file or directory(!) from your current local directory to the current remote directory,
 
 'get filename'    will do the reverse (from remote to local)
