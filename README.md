@@ -14,7 +14,7 @@ export PYRO_FLAME_ENABLED=true
 
 followed by:
 
-python -m Pyro4.utils.flameserver -H x.x.x.x -p 9999
+python -m Pyro4.utils.flameserver -H x.x.x.x -p 9900
 
 where x.x.x.x is the (fixed) IP address of the PI.
 
