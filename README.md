@@ -1,7 +1,7 @@
 remco
 =====
 
-<b>Remote command in Python using Pyro4, e.g. control your Raspberry PI remotely.</b>
+<b>Remote command in Python using Pyro4, e.g. control your Raspberry PI (or other Linux box) remotely.</b>
 
 Very simple program to do remote commands and send (put) or retrieve (get) files.
 Local commands are also possible to navigate locally.
@@ -27,6 +27,8 @@ Local commands must be preceded by a '.', so:
 '.ls' will do ls on your local system.
 '.cd' will do a local cd
 
-'put filename'    will copy a file or directory(!) from your current local directory to the current remote directory,
+'put filename' will copy a file or directory(!) from your current local directory to the current remote directory,
 
-'get filename'    will do the reverse (from remote to local)
+'get filename' will do the reverse (from remote to local)
+
+'diff' will tell if the local and remote directory contain the same files/dirs (only sizes are checked!)
