@@ -2,7 +2,7 @@
 #	remco.py	remote commands on a trusted network
 #   by zappfinger,
 #
-#	version:	1.7
+#	version:	1.9
 #	04AUG2014:	local commands now preceded by '.', e.g.: '.ls'
 #	09AUG2014:	using import readline to enable command history, back keys, etc
 #	12AUG2014:	.cd was not working, get was not working
@@ -10,11 +10,13 @@
 #	21SEP2014:	better error handling
 #	03OCT2014:	show local and remote host names
 #	05OCT2014:	added diff function to compare directories
+#	13OCT2014:	do not allow diff on local dir<>remote dir
+#	06MAR2015:  using Pyro 4.32 now, specify pickle serializer
 #
 #   on the remote server, execute:
 #   export PYRO_FLAME_ENABLED=true
 #   and
-#   python -m Pyro4.utils.flameserver -H x.x.x.x -p 9999
+#   python -m Pyro4.utils.flameserver -H x.x.x.x -p 9900
 #	where x.x.x.x is IP address of the remote server
 #	NOTE: only on Linux/OS X platforms!
 #
@@ -24,10 +26,12 @@ import Pyro4.utils.flame
 import readline
 import socket
 
+Pyro4.config.SERIALIZER = "pickle"    # flame requires pickle serializer
+
 #	CHANGE THIS TO THE IP ADDRESS OF YOUR REMOTE SYSTEM
 #flame = Pyro4.utils.flame.connect("192.168.170.201:9900")
-#flame = Pyro4.utils.flame.connect("192.168.170.117:9999")
-flame = Pyro4.utils.flame.connect("10.0.1.3:9900")	# my PI
+#flame = Pyro4.utils.flame.connect("192.168.170.126:9900")
+flame = Pyro4.utils.flame.connect("10.0.1.29:9900")	# my PI
 
 if sys.version_info<(3,0):
     input=raw_input
@@ -53,7 +57,7 @@ def getFileOrDir(command):
 		newfile = open(fildir,'wb')
 		newfile.write(gfile)
 		newfile.close()
-	except Exception:
+	except Exception,e:
 		lines = "\n".join(Pyro4.util.getPyroTraceback())
 		if 'Is a directory' in lines:
 			print(os.popen('mkdir ' + fildir).read())	#	create local dir also 
@@ -68,7 +72,7 @@ def getFileOrDir(command):
 			result = flame.module("flame.stuff").doCommand('cd ..')
 			ret = os.chdir(os.path.abspath('..'))
 		else:
-			print("%s is not a file or directory..." % fildir)
+			print(str(e))
 			
 def putFileOrDir(command):
 	print(command + '\n')
@@ -77,7 +81,7 @@ def putFileOrDir(command):
 		#result = flame.module("flameexample.stuff").doCommand('rm ' + file)
 		try:	
 			flame.sendfile(fildir, open(fildir,'rb').read())
-		except Exception:
+		except Exception,e:
 			lines = "\n".join(Pyro4.util.getPyroTraceback())
 			#print(lines)
 			if 'Is a directory' in lines:
@@ -93,7 +97,7 @@ def putFileOrDir(command):
 				result = flame.module("flame.stuff").doCommand('cd ..')
 				ret = os.chdir(os.path.abspath('..'))
 			else:
-				print("%s is not a file or directory..." % fildir)
+				print(str(e))
 
 Pyro4.config.SERIALIZER = "pickle"  # flame requires pickle serializer
 
@@ -111,16 +115,21 @@ myIP =socket.gethostbyname(socket.gethostname())
 myName = socket.gethostname()
 
 while 1:
-	print('local dir (%s): ' % (myName) + os.popen('pwd').read().strip('\n'));
-	print('remote dir (%s): ' % (socketmodule.gethostname())+ osmodule.getcwd())
+	localdir = os.popen('pwd').read().strip('\n')
+	remotedir = osmodule.getcwd()
+	print('local dir (%s): ' % (myName) + localdir);
+	print('remote dir (%s): ' % (socketmodule.gethostname())+ remotedir)
 	prompt = "Enter command, precede local commands with a dot, e.g.: '.ls' $"
 	command = input(prompt)
 	if 'get ' in command:
 		getFileOrDir(command)
 	elif 'put ' in command:
 		putFileOrDir(command)
-	elif 'diff' in command:
-		print(diff())
+	elif 'diff' in command:	# do diff only if local dir = remote dir
+		if localdir == remotedir:
+			print(diff())
+		else:
+			print('*** remote dir and local dir are not the same, cannot do diff! ***')
 	elif 'pspy' in command:
 		command = 'ps -ef|grep python'
 		print(command + '\n')

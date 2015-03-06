@@ -1,7 +1,7 @@
 remco
 =====
 
-<b>Remote command in Python using Pyro4, e.g. control your Raspberry PI (or other Linux box) remotely.</b>
+<b>Remote command in Python using Pyro4.32, e.g. control your Raspberry PI (or other Linux box) remotely.</b>
 
 Very simple program to do remote commands and send (put) or retrieve (get) files.
 Local commands are also possible to navigate locally.
