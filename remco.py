@@ -12,6 +12,7 @@
 #	05OCT2014:	added diff function to compare directories
 #	13OCT2014:	do not allow diff on local dir<>remote dir
 #	06MAR2015:  using Pyro 4.32 now, specify pickle serializer
+#	09APR2015:	using subprocess now for most commands, correction for dir/file name same as command
 #
 #   on the remote server, execute:
 #   export PYRO_FLAME_ENABLED=true
@@ -78,7 +79,10 @@ def putFileOrDir(command):
 	print(command + '\n')
 	fildir = command.replace('put ','')
 	if len(fildir)>1:		# remove targetfile first
-		#result = flame.module("flameexample.stuff").doCommand('rm ' + file)
+		try:
+			result = flame.module("flame.stuff").doCommand('rm -rf ' + fildir)
+		except:
+			pass
 		try:	
 			flame.sendfile(fildir, open(fildir,'rb').read())
 		except Exception,e:

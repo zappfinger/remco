@@ -1,12 +1,14 @@
-# 	this module will be sent to the server as 'flameexample.stuff'
+# 	this module will be sent to the server as 'flame.stuff'
 # 	used by remco.py
 #	by: zappfinger
 #	update: 02AUG2014, added SQLite class
 #	update: 01OCT2014, added insert and delete command
 #	update: 05OCT2014, added stat command
+#	update: 28MAR2015, name is 'flame.stuff' 
+#	update: 09APR2015, use subprocess, correct for dir name equals command (like 'static')
 #
 from __future__ import print_function
-import os, random, sqlite3, sys, time
+import os, subprocess, random, sqlite3, sys, time
 from functools import partial
 
 #
@@ -36,7 +38,7 @@ def doCommand(command):
 		dir = command.replace('cd ','')
 		#print(dir)
 		ret = os.chdir(os.path.abspath(dir))
-	elif 'stat' in command:
+	elif 'stat ' in command:
 		ret = os.stat(command.replace('stat ',''))
 	elif 'con' in command:
 		db1=db()
@@ -52,7 +54,8 @@ def doCommand(command):
 		db1 = db()
 		ret = db1.delete(command)
 	else:
-		ret = os.popen(command).read()
+		print ('command: ' + command)
+		ret = subprocess.call(command, shell=True)
 	return ret
     
 
