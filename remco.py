@@ -31,8 +31,8 @@ Pyro4.config.SERIALIZER = "pickle"    # flame requires pickle serializer
 
 #	CHANGE THIS TO THE IP ADDRESS OF YOUR REMOTE SYSTEM
 #flame = Pyro4.utils.flame.connect("192.168.170.201:9900")
-#flame = Pyro4.utils.flame.connect("192.168.170.126:9900")
-flame = Pyro4.utils.flame.connect("10.0.1.29:9900")	# my PI
+#flame = Pyro4.utils.flame.connect("94.208.174.10:9900")
+flame = Pyro4.utils.flame.connect("192.168.1.88:9900")	# my PI
 
 if sys.version_info<(3,0):
     input=raw_input
