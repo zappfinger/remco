@@ -6,6 +6,7 @@
 #	update: 05OCT2014, added stat command
 #	update: 28MAR2015, name is 'flame.stuff' 
 #	update: 09APR2015, use subprocess, correct for dir name equals command (like 'static')
+#	update: 30MAY2015, ls did not work, subprocess now with check_output 
 #
 from __future__ import print_function
 import os, subprocess, random, sqlite3, sys, time
@@ -55,7 +56,7 @@ def doCommand(command):
 		ret = db1.delete(command)
 	else:
 		print ('command: ' + command)
-		ret = subprocess.call(command, shell=True)
+		ret = subprocess.check_output(command, shell=True)
 	return ret
     
 
